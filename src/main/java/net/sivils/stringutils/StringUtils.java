@@ -158,48 +158,36 @@ public final class StringUtils extends PlaceholderExpansion {
                 }
                 String[] splitRandom = text.split(separator);
                 return splitRandom[randomString.nextInt(splitRandom.length)];
-            case "changecolor":
+
+            case "replace":
                 arguments = "_" + arguments;
-                if (!arguments.contains("_input:")||!arguments.contains("_newcolor:")){
-                    return "Invalid arguments. Requires input and newcolor.";
+                if (!arguments.contains("_text:")||!arguments.contains("_from:")||!arguments.contains("_to:")){
+                    return "Invalid arguments. Requires text, from, and to.";
                 }
-                String regexChangeColor = "(_input:|_newcolor:)(.+?)(?=(_input:|_newcolor:|$))";
+                String regexChangeColor = "(_text:|_from:|_to:)(.+?)(?=(_text:|_from:|_to:|$))";
 
                 Pattern patternChangeColor = Pattern.compile(regexChangeColor);
-                Matcher matcherChangeCOlor = patternChangeColor.matcher(arguments);
+                Matcher matcherChangeColor = patternChangeColor.matcher(arguments);
 
-                String input = "", newcolor = "";
+                String textReplace = "", oldChar = "", newChar = "";
 
-                while (matcherChangeCOlor.find()) {
-                    String key = matcherChangeCOlor.group(1);
-                    String value = matcherChangeCOlor.group(2);
+                while (matcherChangeColor.find()) {
+                    String key = matcherChangeColor.group(1);
+                    String value = matcherChangeColor.group(2);
 
                     switch (key) {
-                        case "_input:":
-                            input = value;
+                        case "_text:":
+                            textReplace = value;
                             break;
-                        case "_newcolor:":
-                            newcolor = value;
+                        case "_from:":
+                            oldChar = value;
+                            break;
+                        case "_to:":
+                            newChar = value;
                             break;
                     }
                 }
-                if (input.contains("_CONCRETE_POWDER")){
-                    return newcolor + input.substring(input.length() - 16);
-                } else if (input.contains("_CONCRETE")){
-                    return newcolor + input.substring(input.length() - 9);
-                } else if (input.contains("_STAINED_GLASS_PANE")){
-                    return newcolor + input.substring(input.length() - 19);
-                } else if (input.contains("_WOOL")){
-                    return newcolor + input.substring(input.length() - 5);
-                } else if (input.contains("_GlAZED_TERRACOTTA")){
-                    return newcolor + input.substring(input.length() - 18);
-                } else if (input.contains("_TERRACOTTA")){
-                    return newcolor + input.substring(input.length() - 11);
-                } else if (input.contains("_STAINED_GLASS")){
-                    return newcolor + input.substring(input.length() - 14);
-                } else if (input.contains("_CARPET")){
-                    return newcolor + input.substring(input.length() - 7);
-                }
+                return textReplace.replace(oldChar, newChar);
 
         }
 
